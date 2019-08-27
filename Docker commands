@@ -1,24 +1,5 @@
 # Docker Demo
 
-## Table of Contents
-
-* [Why Docker](#why-docker)
-* [Prerequisites](#prerequisites)
-* [Installation](#installation)
-* [Containers](#containers)
-* [Images](#images)
-* [Networks](#networks)
-* [Registry and Repository](#registry--repository)
-* [Dockerfile](#dockerfile)
-* [Layers](#layers)
-* [Links](#links)
-* [Volumes](#volumes)
-* [Exposing Ports](#exposing-ports)
-* [Best Practices](#best-practices)
-* [Docker-Compose](#docker-compose)
-* [Security](#security)
-* [Tips](#tips)
-* [Contributing](#contributing)
 
 ## Why Docker
 
@@ -59,8 +40,53 @@ docker run hello-world
 
 That's it, you have a running Docker container.
 
-If you are a complete Docker newbie, you should probably follow the [series of tutorials](https://docs.docker.com/engine/getstarted/) now.
+Lets create one more - 
 
+```
+docker run -d --name nginx1 nginx 
+```
+
+The output will be as below - 
+
+```
+docker run -d --name nginx1 nginx 
+Unable to find image 'nginx:latest' locally
+latest: Pulling from library/nginx
+1ab2bdfe9778: Pull complete 
+a17e64cfe253: Pull complete 
+e1288088c7a8: Pull complete 
+Digest: sha256:53ddb41e46de3d63376579acf46f9a41a8d7de33645db47a486de9769201fec9
+Status: Downloaded newer image for nginx:latest
+af036d6c888e6e18b3914834bd157538ef2b5005bb876fdec598c8c0a6aa8bf4
+```
+
+Lets now connect to the nginx container by **inspecting** it first**
+
+Get the container id by listing all the docker processes
+
+```
+docker ps 
+
+```
+
+The output will be as below - 
+
+```
+ocker ps 
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS               NAMES
+af036d6c888e        nginx               "nginx -g 'daemon of…"   About a minute ago   Up 58 seconds       80/tcp              suspicious_wozniak
+```
+
+```
+docker inspect nginx1
+```
+
+Get the ip address of container - 
+
+```
+docker inspect nginx1 | grep IPAddress
+```
+Run a curl to the ip address to access the container 
 
 ## Containers
 
