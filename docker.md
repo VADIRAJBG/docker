@@ -104,13 +104,43 @@ Normally if you run a container without options it will start and stop immediate
 
 If you want a transient container, `docker run --rm` will remove the container after it stops.
 
-If you want to map a directory on the host to a docker container, `docker run -v $HOSTDIR:$DOCKERDIR`. Also see [Volumes](https://github.com/wsargent/docker-cheat-sheet/#volumes).
+If you want to map a directory on the host to a docker container, `docker run -v $HOSTDIR:$DOCKERDIR`. 
 
 If you want to remove also the volumes associated with the container, the deletion of the container must include the `-v` switch like in `docker rm -v`.
 
 There's also a [logging driver](https://docs.docker.com/engine/admin/logging/overview/) available for individual containers in docker 1.10. To run docker with a custom log driver (i.e., to syslog), use `docker run --log-driver=syslog`.
 
 Another useful option is `docker run --name yourname docker_image` because when you specify the `--name` inside the run command this will allow you to start and stop a container by calling it with the name the you specified when you created it.
+
+
+Examples - 
+
+* docker create
+
+```
+docker create --name myubuntu ubuntu 
+```
+
+* docker rename 
+
+```
+docker rename myubuntu ubuntutest
+```
+
+* docker run 
+
+```
+docker run -d nginx
+```
+
+* docker rm 
+
+```
+docker ps -a 
+
+docker rm {CONTAINER_ID}
+
+```
 
 ### Starting and Stopping
 
@@ -128,7 +158,15 @@ If you want to integrate a container with a [host process manager](https://docs.
 
 If you want to expose container ports through the host, see the [exposing ports](#exposing-ports) section.
 
-Restart policies on crashed docker instances are [covered here](http://container42.com/2014/09/30/docker-restart-policies/).
+Examples - 
+
+* docker attach 
+
+```
+docker run -d --name topdemo ubuntu /usr/bin/top -b
+
+docker attach topdemo
+```
 
 #### CPU Constraints
 
