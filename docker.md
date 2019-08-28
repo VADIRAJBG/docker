@@ -160,12 +160,74 @@ If you want to expose container ports through the host, see the [exposing ports]
 
 Examples - 
 
-* docker attach 
+* Search docker ubuntu image
 
 ```
-docker run -d --name topdemo ubuntu /usr/bin/top -b
+ docker search ubuntu
+```
 
-docker attach topdemo
+* Pull ubuntu image
+
+```
+docker pull ubuntu:18.04
+```
+
+* Search for all images in your repository
+
+```
+docker images
+```
+
+
+* Run the docker image with bash prompt
+
+```
+docker run -it --name myubuntu ubuntu bash
+```
+
+Now you are inside ubuntu
+
+* Exit the container 
+
+```
+exit
+```
+
+* Get the docker processes 
+
+```
+docker ps -a
+```
+
+* Start a previous process - 
+
+```
+docker start myubuntu
+
+docker ps 
+```
+
+* Attach to a docker process 
+
+```
+docker attach myubuntu
+```
+
+* Perform some changes on the container 
+
+```
+apt-get update 
+apt-get ugprade
+exit
+```
+
+* Commit the latest changes made to the container. 
+
+You may choose to provide a new name to the container, or overwrite the existing image
+
+```
+docker commit myubuntu myupgradedubuntu
+docker images
 ```
 
 #### CPU Constraints
