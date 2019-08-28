@@ -263,7 +263,7 @@ Linux capabilities can be set by using `cap-add` and `cap-drop`.  See <https://d
 To mount a FUSE based filesystem, you need to combine both --cap-add and --device:
 
 ```
-docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse sshfs
+docker run --rm -it --cap-add SYS_ADMIN --device /dev/fuse ubuntu
 ```
 
 Give access to a single device:
@@ -272,11 +272,6 @@ Give access to a single device:
 docker run -it --device=/dev/ttyUSB0 debian bash
 ```
 
-Give access to all devices:
-
-```
-docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb debian bash
-```
 
 More info about privileged containers [here](
 https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities).
@@ -337,17 +332,6 @@ It is very important that you always know the current version of Docker you are 
 docker version --format '{{.Server.Version}}'
 ```
 
-In Docker 1.8.0 and higher, you can also dump the raw JSON data:
-
-```bash
-docker version --format '{{json .}}'
-```
-
-will provide the output in JSON format:
-
-```json
-{"Client":{"Version":"1.8.0","ApiVersion":"1.20","GitCommit":"f5bae0a","GoVersion":"go1.4.2","Os":"linux","Arch":"am"}
-```
 
 ### Cleaning up
 
@@ -468,59 +452,63 @@ Here are some common text editors and their syntax highlighting modules you coul
 * [STOPSIGNAL](https://docs.docker.com/engine/reference/builder/#stopsignal) sets the system call signal that will be sent to the container to exit.
 * [LABEL](https://docs.docker.com/config/labels-custom-metadata/) apply key/value metadata to your images, containers, or daemons.
 
-### Tutorial
-
-* [Flux7's Dockerfile Tutorial](http://flux7.com/blogs/docker/docker-tutorial-series-part-3-automation-is-the-word-using-dockerfile/)
 
 ### Examples
 
-* [Examples](https://docs.docker.com/engine/reference/builder/#dockerfile-examples)
-* [Best practices for writing Dockerfiles](https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices/)
-* [Michael Crosby](http://crosbymichael.com/) has some more [Dockerfiles best practices](http://crosbymichael.com/dockerfile-best-practices.html) / [take 2](http://crosbymichael.com/dockerfile-best-practices-take-2.html).
-* [Building Good Docker Images](http://jonathan.bergknoff.com/journal/building-good-docker-images) / [Building Better Docker Images](http://jonathan.bergknoff.com/journal/building-better-docker-images)
-* [Managing Container Configuration with Metadata](https://speakerdeck.com/garethr/managing-container-configuration-with-metadata)
-* [How to write excellent Dockerfiles](https://rock-it.pl/how-to-write-excellent-dockerfiles/)
+Create a test directory 
+```
+mkdir dockerdemo
+cd dockerdemo 
+```
+
+Create a test index.html file 
+
+```
+echo "This is a test index file " > index.html 
+```
+
+Write a Dockerfile to use a base nginx image and edit index.html with your custom html 
+
+```
+vi Dockerfile
+```
+
+Add the below content to Dockerfile
+
+```
+FROM nginx:latest 
+COPY index.html /usr/share/nginx/html/index.html
+
+```
+
+Build the Dockerfile 
+
+
+```
+docker build . -t myfirstdockerfile
+```
+
+Login to Docker Hub
+
+```
+docker login
+```
+
+Tag your image to push to dockerhub
+
+```
+docker tag myfirstdockerfile YOUR_DOCKERHUB_ID/myfirstdockerfile
+docker push YOUR_DOCKERHUB_ID/myfirstdockerfile
+```
 
 ## Layers
 
 The versioned filesystem in Docker is based on layers. They're like [git commits or changesets for filesystems](https://docs.docker.com/engine/userguide/storagedriver/imagesandcontainers/).
 
-## Links
-
-Links are how Docker containers talk to each other [through TCP/IP ports](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/). [Atlassian](https://blogs.atlassian.com/2013/11/docker-all-the-things-at-atlassian-automation-and-wiring/) show worked examples. You can also resolve [links by hostname](https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/#/updating-the-etchosts-file).
-
-This has been deprecated to some extent by [user-defined networks](https://docs.docker.com/network/).
-
-NOTE: If you want containers to ONLY communicate with each other through links, start the docker daemon with `-icc=false` to disable inter process communication.
-
-If you have a container with the name CONTAINER (specified by `docker run --name CONTAINER`) and in the Dockerfile, it has an exposed port:
-
-```
-EXPOSE 1337
-```
-
-Then if we create another container called LINKED like so:
-
-```
-docker run -d --link CONTAINER:ALIAS --name LINKED user/wordpress
-```
-
-Then the exposed ports and aliases of CONTAINER will show up in LINKED with the following environment variables:
-
-```
-$ALIAS_PORT_1337_TCP_PORT
-$ALIAS_PORT_1337_TCP_ADDR
-```
-
-And you can connect to it that way.
-
-To delete links, use `docker rm --link`.
-
-Generally, linking between docker services is a subset of "service discovery", a big problem if you're planning to use Docker at scale in production.  Please read [The Docker Ecosystem: Service Discovery and Distributed Configuration Stores](https://www.digitalocean.com/community/tutorials/the-docker-ecosystem-service-discovery-and-distributed-configuration-stores) for more info.
 
 ## Volumes
 
-Docker volumes are [free-floating filesystems](https://docs.docker.com/engine/tutorials/dockervolumes/). They don't have to be connected to a particular container. You can use volumes mounted from [data-only containers](https://medium.com/@ramangupta/why-docker-data-containers-are-good-589b3c6c749e) for portability. As of Docker 1.9.0, Docker has named volumes which replace data-only containers. Consider using named volumes to implement it rather than data containers.
+Docker volumes are [free-floating filesystems](https://docs.docker.com/engine/tutorials/dockervolumes/). They don't have to be connected to a particular container. 
 
 ### Lifecycle
 
@@ -574,19 +562,6 @@ Note that EXPOSE does not expose the port itself -- only `-p` will do that. To e
 iptables -t nat -A DOCKER -p tcp --dport <LOCALHOSTPORT> -j DNAT --to-destination <CONTAINERIP>:<PORT>
 ```
 
-If you're running Docker in Virtualbox, you then need to forward the port there as well, using [forwarded_port](https://docs.vagrantup.com/v2/networking/forwarded_ports.html). Define a range of ports in your Vagrantfile like this so you can dynamically map them:
-
-```
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  ...
-
-  (49000..49900).each do |port|
-    config.vm.network :forwarded_port, :host => port, :guest => port
-  end
-
-  ...
-end
-```
 
 If you forget what you mapped the port to on the host container, use `docker port` to show it:
 
@@ -935,23 +910,3 @@ vim httpd.conf
 # start container with modified configuration
 docker run --rm -it -v "$PWD/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro" -p "80:80" httpd
 ```
-
-## Contributing
-
-Here's how to contribute to this cheat sheet.
-
-### Open README.md
-
-Click [README.md](https://github.com/wsargent/docker-cheat-sheet/blob/master/README.md) <-- this link
-
-![Click This](images/click.png)
-
-### Edit Page
-
-![Edit This](images/edit.png)
-
-### Make Changes and Commit
-
-![Change This](images/change.png)
-
-![Commit](images/commit.png)
