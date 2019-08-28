@@ -16,7 +16,8 @@ Docker helps developers build and ship higher-quality applications, faster." -- 
 Installation procedure on Ubuntu :
 
 ```
-apt-get update && apt-get install -y docker.io
+apt-get update 
+apt-get install -y docker.io
 ```
 
 Verify docker version
