@@ -381,6 +381,15 @@ Docker has a [networks](https://docs.docker.com/engine/userguide/networking/) fe
 * [`docker network ls`](https://docs.docker.com/engine/reference/commandline/network_ls/)
 * [`docker network inspect`](https://docs.docker.com/engine/reference/commandline/network_inspect/)
 
+### Volumes
+
+Be aware that you can mount files as volumes. For example you can inject a configuration file like this:
+
+``` 
+docker run -v /data:/var/lib/mysql --name mysqlserver -e MYSQL_ROOT_PASSWORD=root -d mysql
+```
+
+
 ### Connection
 
 * [`docker network connect`](https://docs.docker.com/engine/reference/commandline/network_connect/)
@@ -897,17 +906,4 @@ Remove all exited containers:
 docker rm -f $(docker ps -a | grep Exit | awk '{ print $1 }')
 ```
 
-### Volumes can be files
 
-Be aware that you can mount files as volumes. For example you can inject a configuration file like this:
-
-``` bash
-# copy file from container
-docker run --rm httpd cat /usr/local/apache2/conf/httpd.conf > httpd.conf
-
-# edit file
-vim httpd.conf
-
-# start container with modified configuration
-docker run --rm -it -v "$PWD/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro" -p "80:80" httpd
-```
