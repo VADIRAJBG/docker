@@ -77,3 +77,12 @@ docker build . -t angularfe
 
 docker run -d -p 4200:80 angularfe
 ```
+
+
+Log in to the server on which you have jenkins installed 
+
+```
+sudo -i 
+
+usermod -aG docker jenkins 
+```
